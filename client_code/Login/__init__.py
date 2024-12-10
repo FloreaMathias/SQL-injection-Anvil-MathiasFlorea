@@ -14,17 +14,21 @@ class Login(LoginTemplate):
    
           
     def button_login_click(self, **event_args):
-        username = self.text_box_username.text
-        password = self.text_box_password.text
-        
-        if self.radio_button_unsafe.selected:
-            result = anvil.server.call('login_insecure', username, password)
-        elif self.radio_button_safe.selected:
-            result = anvil.server.call('login_secure', username, password)
-        else:
-            result = "Bitte wähle einen Typ aus"
-        
-        if result.startswith("Willkommen"):
-            open_form('Home', result=result)
-        else:
-            self.label_result.text = result
+      username = self.text_box_username.text
+      password = self.text_box_password.text
+      
+      if any(char in username + password for char in ["'", ";", "--", "/*", "*/"]):
+          self.label_result.text = "Ungültige Eingabe erkannt!"
+          return
+    
+      if self.radio_button_unsafe.selected:
+          result = anvil.server.call('login_insecure', username, password)
+      elif self.radio_button_safe.selected:
+          result = anvil.server.call('login_secure', username, password)
+      else:
+          result = "Bitte wähle einen Typ aus"
+      
+      if result.startswith("Willkommen"):
+          open_form('Home', result=result)
+      else:
+          self.label_result.text = result
