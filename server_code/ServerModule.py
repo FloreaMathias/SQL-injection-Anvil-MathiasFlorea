@@ -1,4 +1,3 @@
-
 import anvil.files
 from anvil.files import data_files
 import anvil.tables as tables
@@ -12,6 +11,12 @@ def get_login_state():
   if "login" not in anvil.server.session:
     anvil.server.session["login"] = False
   return anvil.server.session["login"]
+
+
+#Design und variablen und button var ändern
+
+
+  
   
 @anvil.server.callable
 def get_user(username, passwort):
