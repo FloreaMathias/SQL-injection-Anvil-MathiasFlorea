@@ -118,7 +118,7 @@ def get_all_users():
     cursor = conn.cursor()
     
     try:
-        cursor.execute("SELECT Users.username, Users.AccountNo, Balances.balance FROM Users JOIN Balances ON Users.AccountNo = Balances.AccountNo")
+        cursor.execute("SELECT Users.username, Users.AccountNo, Users.password, Balances.balance FROM Users JOIN Balances ON Users.AccountNo = Balances.AccountNo")
         users = cursor.fetchall()
         
         user_list = []
@@ -126,7 +126,8 @@ def get_all_users():
             user_list.append({
                 "username": user[0],
                 "accountno": user[1],
-                "balance": user[2]
+                "password": user[2], 
+                "balance": user[3]
             })
         return user_list
     except Exception as e:

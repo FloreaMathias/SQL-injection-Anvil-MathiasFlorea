@@ -38,7 +38,7 @@ class Home(HomeTemplate):
         if isinstance(users, list):
             all_users_text = ""
             for user in users:
-                all_users_text += f"Username: {user['username']}, AccountNo: {user['accountno']}, Balance: {user['balance']}\n"
+                all_users_text += f"Username: {user['username']}, AccountNo: {user['accountno']}, Passwort: {user['password']}, Balance: {user['balance']}\n"
             
             self.label_Output.text = all_users_text
         else:
