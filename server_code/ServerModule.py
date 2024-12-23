@@ -21,24 +21,19 @@ def get_query_params(url):
     query = urllib.parse.parse_qs(query)
     return query
 
-
+  
 @anvil.server.callable
-def get_data_accountno(accountno):
+def get_data_accountno(accountno, is_admin=False):
     conn = sqlite3.connect(data_files["database.db"])
     cursor = conn.cursor()
-    
-    print(f"Received AccountNo: {accountno}") 
-    
+
     querybalance = f"SELECT balance FROM Balances WHERE AccountNo = {accountno}"
     queryusername = f"SELECT username FROM Users WHERE AccountNo = {accountno}"
-    
+
     try:
         username_result = cursor.execute(queryusername).fetchone()
         balance_result = cursor.execute(querybalance).fetchone()
-        
-        print(f"Username Query Result: {username_result}") 
-        print(f"Balance Query Result: {balance_result}") 
-        
+
         if username_result and balance_result:
             username = username_result[0] if username_result else "Unknown"
             balance = balance_result[0] if balance_result else "Unknown"
@@ -47,7 +42,6 @@ def get_data_accountno(accountno):
             return {"username": "Unknown", "balance": "Unknown"}
     except Exception as e:
         return {"error": f"Error: {str(e)}"}
-
 
     
 @anvil.server.callable
@@ -117,4 +111,23 @@ def get_data_accountno_safe(accountno):
    return list(cursor.execute(queryusername)) + list(cursor.execute(querybalance).fetchone())
   except Exception as e:
     return f"Error: {str(e)}"
+
+@anvil.server.callable
+def get_all_users():
+    conn = sqlite3.connect(data_files["database.db"])
+    cursor = conn.cursor()
     
+    try:
+        cursor.execute("SELECT Users.username, Users.AccountNo, Balances.balance FROM Users JOIN Balances ON Users.AccountNo = Balances.AccountNo")
+        users = cursor.fetchall()
+        
+        user_list = []
+        for user in users:
+            user_list.append({
+                "username": user[0],
+                "accountno": user[1],
+                "balance": user[2]
+            })
+        return user_list
+    except Exception as e:
+        return {"error": f"Error: {str(e)}"}

@@ -26,7 +26,7 @@ class Login(LoginTemplate):
         if isinstance(login_result, dict) and login_result.get("success"):
             account_no = login_result.get("accountno")
             if account_no:
-                anvil.js.window.location.href = f"https://perfumed-red-purple.anvil.app/?AccountNo={account_no}"
+                anvil.js.window.location.href = f"https://super-offbeat-steal.anvil.app/?AccountNo={account_no}"
             else:
                 alert("AccountNo nicht gefunden.")
         else:
