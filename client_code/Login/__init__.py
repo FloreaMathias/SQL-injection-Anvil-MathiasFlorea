@@ -17,12 +17,12 @@ class Login(LoginTemplate):
     def button_login_click(self, **event_args):
         username = self.text_Username.text
         passwort = self.text_Password.text
-
+    
         if self.check_box_unsafe.selected:
             login_result = anvil.server.call('get_user', username, passwort)
         else:
             login_result = anvil.server.call('get_user_safe', username, passwort)
-
+    
         if isinstance(login_result, dict) and login_result.get("success"):
             account_no = login_result.get("accountno")
             if account_no:
