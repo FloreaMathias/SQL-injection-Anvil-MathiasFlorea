@@ -6,17 +6,13 @@ from anvil.tables import app_tables
 import anvil.server
 import sqlite3
 import urllib.parse
+
+
 @anvil.server.callable
 def get_login_state():
   if "login" not in anvil.server.session:
     anvil.server.session["login"] = False
   return anvil.server.session["login"]
-
-
-#Design und variablen und button var ändern
-
-
-  
   
 @anvil.server.callable
 def get_user(username, passwort):
@@ -56,23 +52,24 @@ def get_data_accountno(accountno):
 def logout():
   anvil.server.session["login"] = False
 
-
 @anvil.server.callable
 def get_user_safe(username, passwort):
-  conn = sqlite3.connect(data_files["database.db"])
-  cursor =  conn.cursor()
-  try:
-    res = cursor.execute("SELECT username FROM Users WHERE username = ? AND password = ?", (username, passwort))
-    result = cursor.fetchone()
-    if result:
-      balance = list(cursor.execute("SELECT Balances.balance FROM Users JOIN Balances ON Users.AccountNo = Balances.AccountNo WHERE Users.username = ? AND Users.password = ?",(username, passwort)))
-      res = f"Welcome {username}. Your Balance is {balance}"
-      anvil.server.session["login"] = True
-    else:
-      raise ValueError("Empty Data")
-  except Exception:
-    res = f"Login not successful: \nSELECT username FROM Users WHERE username = '{username}' AND password = '{passwort}'"
-  return res
+    conn = sqlite3.connect(data_files["database.db"])
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT username, AccountNo FROM Users WHERE username = ? AND password = ?", (username, passwort))
+        user = cursor.fetchone()
+        if user:
+            username, accountno = user
+            cursor.execute("SELECT balance FROM Balances WHERE AccountNo = ?", (accountno,))
+            balance = cursor.fetchone()
+            balance = balance[0] if balance else "Unknown"
+            anvil.server.session["login"] = True
+            return {"success": True, "username": username, "balance": balance}
+        else:
+            return "Login not successful. Please check your credentials."
+    except Exception as e:
+        return f"Error during login: {str(e)}"
 
 @anvil.server.callable
 def get_data_accountno_safe(accountno):

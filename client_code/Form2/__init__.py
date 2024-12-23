@@ -7,16 +7,14 @@ from anvil.tables import app_tables
 
 
 class Form2(Form2Template):
-  def __init__(self, **properties):
-    # Set Form properties and Data Bindings.
-    self.init_components(**properties)
-    url = anvil.js.window.location.href
-    queryparams = anvil.server.call('get_query_params', url)
-    accno = queryparams.get('AccountNo', [None])[0]
-    self.label_Output.text = anvil.server.call('get_data_accountno', accno)
+    def __init__(self, **properties):
+        self.init_components(**properties)
 
-    # Any code you write here will run before the form opens.
+    def display_user_data(self, data):
+        username = data.get("username", "Unknown")
+        balance = data.get("balance", "Unknown")
+        self.label_Output.text = f"Welcome, {username}. Your balance is {balance}."
 
-  def outlined_button_back_click(self, **event_args):
-    anvil.server.call('logout')
-    open_form('Form1')
+    def button_back_click(self, **event_args):
+        anvil.server.call('logout')
+        open_form('Form1')

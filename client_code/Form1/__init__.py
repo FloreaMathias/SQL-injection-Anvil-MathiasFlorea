@@ -8,22 +8,26 @@ from anvil.tables import app_tables
 
 class Form1(Form1Template):
     def __init__(self, **properties):
-      self.init_components(**properties)
-      self.injection_possible = True
-      state = anvil.server.call('get_login_state')
-      if state is True:
-        open_form('Form2')
-
-
-    def check_box_1_change(self, **event_args):
-      """This method is called when this checkbox is checked or unchecked"""
+        self.init_components(**properties)
+        self.injection_possible = True
+        state = anvil.server.call('get_login_state')
+        if state is True:
+            open_form('Form2')
 
     def button_login_click(self, **event_args):
-      username = self.text_Username.text
-      passwort = self.text_Password.text
-      Resultpage = open_form('Form2')
-      Resultpage.label_Output.text =  anvil.server.call("get_user",username, passwort)
-      res = anvil.server.call('get_user_safe', username, passwort)
-      print(res)
-      pass
+        username = self.text_Username.text
+        passwort = self.text_Password.text
+
+        if self.check_box_safe.selected:
+            login_result = anvil.server.call('get_user_safe', username, passwort)
+        else:
+            login_result = anvil.server.call('get_user', username, passwort)
+
+        if isinstance(login_result, dict) and login_result.get("success"):
+            Resultpage = open_form('Form2')
+            Resultpage.display_user_data(login_result)
+        else:
+            alert(login_result)
+
+    
 
